@@ -1,49 +1,76 @@
-var express = require('express');
-var config = require('./config/admin');
+const express = require('express');
+const path = require('path');
+const compression = require('compression');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const config = require('./config/admin');
+const logger = require('morgan');
+const partials = require('express-partials');
+const http = require('http');
 
-var app = express();
+const app = express();
 
-//--------------------configure app----------------------
-var pub = __dirname + '/public';
-var view = __dirname + '/views';
 
-app.configure(function() {
-	app.set('view engine', 'html');
-	app.set('views', view);
-	app.engine('.html', require('ejs').__express);
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'html');
+app.engine('.html', require('ejs').__express);
 
-	app.use(express.methodOverride());
-	app.use(express.bodyParser());
-	app.set('basepath', __dirname);
+app.use(partials());
+app.use(logger('dev'));
+app.use(compression());
+app.use(bodyParser.json({ type: '*/*' }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.set('x-powered-by', false);
+
+
+app.get('/', (req, res) => {
+    res.render('index', config);
 });
 
-app.configure('development', function() {
-	app.use(express.static(pub));
-	app.use(express.errorHandler({
-		dumpExceptions: true,
-		showStack: true
-	}));
+app.get('/module/:mname', (req, res) => {
+    res.render(req.params.mname);
 });
 
-app.configure('production', function() {
-	var oneYear = 31557600000;
-	app.use(express.static(pub, {
-		maxAge: oneYear
-	}));
-	app.use(express.errorHandler());
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+    const err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
-app.on('error', function(err) {
-	console.error('app on error:' + err.stack);
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use((err, req, res, next) => {
+        res.status(err.status || 500);
+        res.render('error.ejs', {
+            layout: '',
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.render('error.ejs', {
+        layout: '',
+        message: err.message,
+        error: {}
+    });
 });
 
-app.get('/', function(req, resp) {
-	resp.render('index', config);
-});
 
-app.get('/module/:mname', function(req, resp) {
-	resp.render(req.params.mname);
-});
+const port = 7001;
+app.set('port', port);
+const server = http.createServer(app);
+server.listen(port);
 
-app.listen(7001);
-console.log('[AdminConsoleStart] visit http://0.0.0.0:7001');
+console.log(`[dreami admin web] started visit http://127.0.0.1:${port}`);
