@@ -3,13 +3,14 @@ const path = require('path');
 const compression = require('compression');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const config = require('./config/admin');
+const config = require('./config/config.json');
 const logger = require('morgan');
 const partials = require('express-partials');
 const http = require('http');
+const socketServer = require('./mqttConnect/socketServer');
 
 const app = express();
-
+socketServer.start(config.socketPort);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -68,9 +69,8 @@ app.use((err, req, res, next) => {
 });
 
 
-const port = 7001;
-app.set('port', port);
+app.set('port', config.webPort);
 const server = http.createServer(app);
-server.listen(port);
+server.listen(config.webPort);
 
-console.log(`[dreami admin web] started visit http://127.0.0.1:${port}`);
+console.log(`[dreami admin web] started visit http://127.0.0.1:${config.webPort}`);

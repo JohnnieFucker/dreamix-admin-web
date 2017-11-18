@@ -1,0 +1,9 @@
+{
+	"adminHost": "localhost",
+	"adminPort": 3005,
+	"username": "monitor",
+	"password": "monitor",
+	"socketHost":"localhost",
+	"socketPort":7002,
+	"webPort":7001
+}
