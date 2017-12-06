@@ -1,9 +1,10 @@
-# pomelo-admin-web
-pomelo-admin-web is a web console for [pomelo](https://github.com/NetEase/pomelo). it is based on [pomelo-admin](https://github.com/NetEase/pomelo-admin). it is just an web console example, you can implement your style like web console.      
+# dreamix-admin-web
+It's forked from [pomelo-admin-web](https://github.com/NetEase/pomelo-admin-web)
+dreamix-admin-web is a web console for [dreamix](https://github.com/JohnnieFucker/dreamix). it is based on [dreamix-admin](https://github.com/JohnnieFucker/dreamix-admin). it is just an web console example, you can implement your style like web console.      
 
 ##Installation
 ```
-npm install pomelo-admin-web  
+npm install dreamix-admin-web  
 ```
 ##Usage
 just run  
